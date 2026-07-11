@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fog City Frenzy &mdash; The Bold Italic</title>
+<meta name="description" content="A San Francisco match-3 game from The Bold Italic.">
+  <link rel="icon" href="https://www.thebolditalic.com/content/images/size/w256h256/2025/04/TBILogo-copy.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=playfair-display:400,600,700,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.bunny.net/css?family=merriweather:300,700" rel="stylesheet">
+<style>
+    :root {
+      --epcl-title-font-family: 'Playfair Display', 'Times New Roman', serif;
+      --epcl-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-serif: Georgia, 'Times New Roman', serif;
+      --epcl-titles-color: #1E1B1B;
+      --bg-primary: #fff6e6;
+      --bg-card: rgb(237, 231, 223);
+      --bg-alt-row: rgb(237, 227, 213);
+      --bg-hover: rgba(255,214,130,0.18);
+      --epcl-text-color: #3B3A3A;
+      --epcl-secondary-color: #FFD682;
+      --epcl-border-color: #707070;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg-primary); color: var(--epcl-text-color); font-family: var(--epcl-font-family); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+    body.embedded { background: transparent; }
+    a { color: inherit; }
+    body.embedded .site-header { display: none; }
+    body.embedded .body-background { display: none; }
+
+    /* ---- Banner background (absolute, behind everything) ---- */
+    .body-background {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      overflow: hidden;
+      z-index: -2;
+    }
+    .body-background::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(rgba(255,255,255,0) 0%, rgb(255,246,230) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .body-background img.fullwidth {
+      display: block;
+      width: calc(100% + 200px);
+      margin-left: -100px;
+      height: auto;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 65%);
+      mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 65%);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+
+    /* ---- Header wrapper ---- */
+    .site-header {
+      position: relative;
+      padding-top: 5px !important;
+      padding-bottom: 0 !important;
+    }
+    .site-header .menu-wrapper { text-align: center; padding: 70px 0 0; }
+    .site-header .grid-container {
+      box-sizing: content-box;
+      max-width: 1290px;
+      margin: 0 auto;
+      padding: 0 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    /* ---- Logo: centered, scale(2) on desktop ---- */
+    .site-header .logo { text-align: center; }
+    .site-header .logo a {
+      display: inline-block;
+      color: var(--epcl-titles-color);
+      vertical-align: middle;
+    }
+    .site-header .logo a:hover { transform: translateY(-2px); }
+    .site-header .logo a img {
+      display: block;
+      max-width: none !important;
+      height: auto !important;
+      margin: 0 auto;
+      transform-origin: center top;
+    }
+    @media (min-width: 992px) {
+      .site-header .logo a img { transform: scale(2) !important; }
+      .site-header .logo {
+        padding-bottom: 20px !important;
+        margin-top: -20px !important;
+      }
+    }
+    @media (max-width: 991px) {
+      .site-header .logo a img { transform: scale(1.25) !important; }
+    }
+
+    /* ---- Nav bar: white strip with black hairline borders ---- */
+    .site-header .main-nav {
+      margin-top: 70px !important;
+      padding: 2px 0 !important;
+      min-height: auto !important;
+      position: relative;
+      display: inline-block;
+      text-align: center;
+    }
+    /* Full-bleed white bar behind the nav */
+    .site-header .main-nav::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      background: #fff;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      z-index: -1;
+    }
+    .site-header .main-nav ul.menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 0;
+      align-items: center;
+      justify-content: center;
+    }
+    .site-header .main-nav ul.menu > li {
+      padding: 10px 15px;
+    }
+    .site-header .main-nav ul.menu > li > a {
+      font-family: 'Playfair Display', 'Times New Roman', serif;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: .06em;
+      font-size: 0.95rem;
+      line-height: 1;
+      color: #111 !important;
+      padding: 8px 8px;
+      position: relative;
+      text-decoration: none !important;
+      display: block;
+      white-space: nowrap;
+    }
+    /* Animated underline via ::after */
+    .site-header .main-nav ul.menu > li > a::after {
+      content: "";
+      position: absolute;
+      left: 8px; right: 8px; bottom: 4px;
+      height: 2px;
+      background: #111;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease-out;
+    }
+    .site-header .main-nav ul.menu > li > a:hover::after,
+    .site-header .main-nav ul.menu > li > a:focus::after {
+      transform: scaleX(1);
+    }
+    .site-header .main-nav ul.menu > li.current > a { color: #000 !important; }
+
+    /* ---- Sign In: hide anchor but keep li in flow (matches live site) ---- */
+    .epcl-nav-login a { display: none !important; }
+
+    /* ---- Search button: hidden on events page ---- */
+    .site-header .epcl-search-button {
+      display: none !important;
+    }
+
+    /* ---- Hamburger: hidden on desktop ---- */
+    .site-header .menu-mobile {
+      display: none;
+      background: none; border: none;
+      cursor: pointer; padding: 8px;
+    }
+    .site-header .menu-mobile svg { width: 28px; height: 28px; color: #3B3A3A; }
+
+    /* ---- Mobile (≤991px): hamburger left, logo center, search right ---- */
+    /* ---- Mobile slide-out nav (matches live site architecture) ---- */
+    /* The #wrapper pushes right when menu opens; banner stays fixed */
+    #wrapper {
+      transition: all 300ms ease;
+    }
+    nav.mobile-main-nav {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      height: 100%;
+      margin: 0;
+      width: 400px;
+      max-width: 85vw;
+      z-index: 100;
+      background: var(--bg-primary, #FFF6E6);
+      text-align: center;
+      padding: 60px 40px 40px;
+      box-sizing: border-box;
+      transform: translateX(-400px);
+      box-shadow: 0 3px 12px -1px rgba(7,10,25,.1), 0 22px 27px -20px rgba(7,10,25,.1);
+      transition: all 300ms ease;
+      opacity: 0;
+      visibility: hidden;
+      overflow: auto;
+    }
+    nav.mobile-main-nav .logo {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    nav.mobile-main-nav .logo img {
+      max-width: 170px;
+      height: auto;
+    }
+    nav.mobile-main-nav ul.menu {
+      list-style: none;
+      float: none;
+      padding: 50px 0;
+      margin: 0;
+      text-align: left;
+    }
+    nav.mobile-main-nav ul.menu > li {
+      display: block;
+      padding: 13px 0;
+    }
+    nav.mobile-main-nav ul.menu > li > a {
+      font-family: 'Playfair Display', 'Times New Roman', serif;
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 400;
+      color: #1E1B1B;
+      text-decoration: none;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    nav.mobile-main-nav ul.menu > li > a:hover {
+      color: #000;
+    }
+    nav.mobile-main-nav li.epcl-nav-login { display: none; }
+    nav.mobile-main-nav .nav-login {
+      text-align: center;
+      margin-top: 20px;
+    }
+    nav.mobile-main-nav .nav-login a {
+      margin: 0 10px;
+      font-size: 16px;
+      text-decoration: none;
+      color: #1E1B1B;
+    }
+    nav.mobile-main-nav .nav-login .link-button {
+      display: none; /* Sign In hidden — same as live site */
+    }
+    nav.mobile-main-nav .nav-login .epcl-button {
+      display: inline-block;
+      padding: 7px 25px;
+      background: #e5ce9e;
+      color: #1E1B1B;
+      border-radius: 100px;
+      font-family: 'Playfair Display', 'Times New Roman', serif;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.1px;
+      text-decoration: none;
+      position: relative;
+      z-index: 2;
+      border: none;
+      transition: all 300ms ease;
+    }
+    nav.mobile-main-nav .nav-login .epcl-button::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      box-sizing: border-box;
+      border-radius: 100px;
+      border: 1px solid #707070;
+      z-index: -1;
+      pointer-events: none;
+      transform: translate(2px, 3px);
+      transition: all 0.2s ease-out;
+    }
+
+    /* Open state — triggered by epcl-menu-open on <html> */
+    .epcl-menu-open nav.mobile-main-nav {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+    .epcl-menu-open #wrapper {
+      transform: translateX(400px);
+    }
+    .epcl-menu-open body {
+      overflow: hidden;
+    }
+    /* Dark overlay */
+    div.menu-overlay {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      z-index: 90;
+      background: #000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 300ms ease;
+    }
+    .epcl-menu-open div.menu-overlay {
+      opacity: 0.15;
+      visibility: visible;
+    }
+
+    @media (max-width: 991px) {
+      .site-header .menu-wrapper { padding: 11px 0 0; }
+      .site-header .logo { padding-bottom: 0 !important; margin-top: 0 !important; margin-left: 20px; }
+      .site-header .grid-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 14px 60px;
+        min-height: 56px;
+      }
+      /* Hamburger — pinned left */
+      .site-header .menu-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        left: 15px;
+        top: 52%;
+        transform: translateY(-50%);
+        width: 48px; height: 48px;
+        z-index: 10;
+        cursor: pointer;
+      }
+      .site-header .menu-mobile svg { width: 34px; height: 34px; }
+      /* Search — hidden on events page */
+      .site-header .epcl-search-button { display: none; }
+      /* Desktop nav hidden on mobile */
+      .site-header .main-nav { display: none !important; }
+      /* Logo — centered, smaller scale */
+      .site-header .logo a img {
+        transform: scale(1.25) !important;
+      }
+      /* Banner: fade starts lower with more gradient on mobile */
+      .body-background img.fullwidth {
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 65%, transparent 145%) !important;
+        mask-image: linear-gradient(to bottom, #000 0%, #000 65%, transparent 145%) !important;
+      }
+    }
+    /* Hide mobile nav panel and hamburger on desktop */
+    @media (min-width: 992px) {
+      nav.mobile-main-nav { display: none; }
+      .site-header .menu-mobile { display: none; }
+    }
+/* ---- games content (site palette, sleeker) ---- */
+.game-main{ max-width:600px; margin:0 auto; padding:22px 14px 80px; position:relative; z-index:1; }
+    .game-back{ display:inline-block; margin:2px 4px 18px; font-family:'Playfair Display','Times New Roman',serif; font-weight:600; font-size:15px; color:#1E1B1B; text-decoration:none; opacity:.82; transition:opacity .15s ease; }
+    .game-back:hover{ opacity:1; }
+    .game-frame-wrap{ border-radius:22px; overflow:hidden; background:#EEF2F7; box-shadow:0 16px 44px rgba(74,50,22,.18), 0 4px 12px rgba(74,50,22,.08); }
+    .game-frame{ width:100%; height:840px; border:0; display:block; }
+    .ad-slot{ max-width:760px; margin:6px auto 2px; display:flex; align-items:center; justify-content:center; }
+    /* trim Mediavine's default space above the ad label so it sits closer to the game */
+    .ad-slot .mv-ad-box{ padding-top:10px !important; }
+    .ad-cap{ font-family:'Playfair Display','Times New Roman',serif; font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#b3a488; }
+    @media(max-width:520px){ .game-frame{ height:760px; } }
+</style>
+<!-- Mediavine universal ad script -->
+<script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.mediavine.com/tags/the-bold-italic.js"></script>
+</head>
+<body>
+<script>if (window.self !== window.top) document.body.classList.add('embedded');</script>
+  <!-- Mobile slide-out nav (separate element, same as live site — outside #wrapper) -->
+  <nav class="mobile-main-nav" id="mobile-nav">
+    <div class="logo">
+      <a href="https://www.thebolditalic.com">
+        <img src="https://www.thebolditalic.com/content/images/2025/11/TBI-Logo.png" alt="The Bold Italic" width="170" height="60" decoding="async">
+      </a>
+    </div>
+    <ul class="menu">
+      <li class="nav-about-us"><a href="https://www.thebolditalic.com/about/">About Us</a></li>
+      <li class="nav-i-sf"><a href="https://www.thebolditalic.com/tag/i-love-san-francisco/">I ❤️ SF</a></li>
+      <li class="nav-going-out"><a href="https://events.thebolditalic.com/">Going Out</a></li>
+      <li class="nav-food-drink"><a href="https://www.thebolditalic.com/tag/food-and-drink/">Food &amp; Drink</a></li>
+      <li class="nav-lgbtq"><a href="https://www.thebolditalic.com/tag/lgbtq/">LGBTQ+</a></li>
+      <li class="nav-games"><a href="https://games.thebolditalic.com/">Games</a></li>
+      <li class="nav-get-our-newsletter"><a href="https://www.thebolditalic.com/subscribe/">Get Our Newsletter</a></li>
+      <li class="epcl-nav-login"><a href="https://www.thebolditalic.com/signin">Sign In</a></li>
+    </ul>
+    <div class="nav-login">
+      <a href="https://www.thebolditalic.com/signin" class="link-button">Sign In</a>
+      <a href="https://www.thebolditalic.com/subscribe" class="epcl-button">Subscribe</a>
+    </div>
+  </nav>
+  <!-- Dark overlay behind mobile nav -->
+  <div class="menu-overlay" id="menu-overlay"></div>
+
+  <!-- Banner background (absolute, behind everything — outside wrapper so it stays fixed) -->
+  <div class="body-background">
+    <img loading="eager" fetchpriority="high" decoding="async" src="https://www.thebolditalic.com/content/images/2025/11/VibrantSF5.jpg" alt="" class="fullwidth" width="1920" height="600">
+  </div>
+
+  <!-- start: #wrapper (pushes right when mobile menu opens) -->
+  <div id="wrapper">
+
+  <!-- Header: logo over banner + nav bar (exact structure from thebolditalic.com) -->
+  <header id="header" class="site-header classic">
+    <div class="menu-wrapper">
+      <div class="grid-container">
+
+        <div class="logo">
+          <a href="https://www.thebolditalic.com">
+            <img src="https://www.thebolditalic.com/content/images/2025/11/TBI-Logo.png" alt="The Bold Italic" width="170" height="60" decoding="async">
+          </a>
+        </div>
+
+        <nav class="main-nav" id="main-nav">
+          <ul class="menu">
+            <li class="nav-about-us"><a href="https://www.thebolditalic.com/about/">About Us</a></li>
+            <li class="nav-i-sf"><a href="https://www.thebolditalic.com/tag/i-love-san-francisco/">I ❤️ SF</a></li>
+            <li class="nav-going-out"><a href="https://events.thebolditalic.com/">Going Out</a></li>
+            <li class="nav-food-drink"><a href="https://www.thebolditalic.com/tag/food-and-drink/">Food &amp; Drink</a></li>
+            <li class="nav-lgbtq"><a href="https://www.thebolditalic.com/tag/lgbtq/">LGBTQ+</a></li>
+            <li class="nav-games"><a href="https://games.thebolditalic.com/">Games</a></li>
+            <li class="nav-get-our-newsletter"><a href="https://www.thebolditalic.com/subscribe/">Get Our Newsletter</a></li>
+            <li class="epcl-nav-login"><a href="https://www.thebolditalic.com/signin" class="epcl-login epcl-button">Sign In</a></li>
+          </ul>
+        </nav>
+
+        <!-- search button removed — not functional on events page -->
+
+        <div class="menu-mobile" id="menu-toggle" aria-label="Menu">
+          <svg class="icon ularge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div style="clear:both"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="game-main">
+    <a class="game-back" href="/">&larr; All games</a>
+    <div class="game-frame-wrap" id="play">
+      <iframe class="game-frame" src="game.html?v=20260702c" title="Fog City Frenzy &mdash; a San Francisco game" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <!-- Mediavine: suppress site-wide units (sticky footer / side rails / leaderboard / interstitial / player); keep in-content. Only ONE settings div per page. -->
+    <div id="mediavine-settings"
+         data-blocklist-leaderboard="1"
+         data-blocklist-top-sidebar="1"
+         data-blocklist-sticky-sidebar="1"
+         data-blocklist-adhesion-mobile="1"
+         data-blocklist-adhesion-tablet="1"
+         data-blocklist-adhesion-desktop="1"
+         data-blocklist-interstitial-mobile="1"
+         data-blocklist-interstitial-desktop="1"
+         data-blocklist-universal-player-desktop="1"
+         data-blocklist-universal-player-mobile="1"></div>
+    <!-- In-page banner: Mediavine in-content placement hint (fills once the subdomain is enabled in the Mediavine dashboard) -->
+    <div class="ad-slot" id="ad-slot"><div class="content_desktop_hint"></div><div class="content_mobile_hint"></div></div>
+  </main>
+
+  </div><!-- end: #wrapper -->
+<script>
+// --- Mobile menu toggle (matches live site: epcl-menu-open on <html>) ---
+(function() {
+  var toggle = document.getElementById('menu-toggle');
+  var overlay = document.getElementById('menu-overlay');
+  var mobileNav = document.getElementById('mobile-nav');
+  function openMenu() { document.documentElement.classList.add('epcl-menu-open'); }
+  function closeMenu() { document.documentElement.classList.remove('epcl-menu-open'); }
+  function isOpen() { return document.documentElement.classList.contains('epcl-menu-open'); }
+  if (toggle) {
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (isOpen()) closeMenu(); else openMenu();
+    });
+  }
+  if (overlay) overlay.addEventListener('click', closeMenu);
+  if (mobileNav) {
+    mobileNav.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', closeMenu);
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMenu();
+  });
+})();
+</script>
+<script>
+(function(){
+  var f = document.querySelector('.game-frame'); if(!f) return;
+  window.addEventListener('message', function(e){
+    var d = e.data;
+    if (d && d.type === 'tbi-game-height' && d.height){ f.style.height = d.height + 'px'; }
+  });
+})();
+</script>
+<script>
+(function(){
+  // Mobile: land on the game (skip the tall site header) so the in-page ad sits just below it.
+  if (!window.matchMedia || !window.matchMedia('(max-width: 991px)').matches) return;
+  var target = document.getElementById('play') || document.querySelector('.game-frame-wrap');
+  if (!target) return;
+  if ('scrollRestoration' in history) { try { history.scrollRestoration = 'manual'; } catch(e){} }
+  // don't let the browser pin the old top-of-page content while the header settles
+  try { document.documentElement.style.overflowAnchor = 'none'; } catch(e){}
+
+  // A real user gesture cancels auto-landing so we never fight their scroll.
+  var locked = false;
+  ['touchstart','wheel','keydown','pointerdown'].forEach(function(ev){
+    window.addEventListener(ev, function(){ locked = true; }, { passive: true, once: true });
+  });
+
+  function land(){
+    if (locked) return;
+    var y = target.getBoundingClientRect().top + window.pageYOffset - 6;
+    if (y < 0) y = 0;
+    window.scrollTo(0, y);
+  }
+
+  // Re-apply as the header logo image, web fonts and lazy iframe settle — each of
+  // these changes the header height and would otherwise leave us short (on the "All games" link).
+  land();
+  window.addEventListener('load', land);
+  window.addEventListener('pageshow', land);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(land); }
+  var logo = document.querySelector('.site-header .logo img');
+  if (logo && !logo.complete) { logo.addEventListener('load', land); }
+  [80, 200, 400, 700, 1100].forEach(function(ms){ setTimeout(land, ms); });
+})();
+</script>
+</body>
+</html>

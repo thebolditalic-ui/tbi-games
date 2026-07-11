@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>The Bold Italic — Crossword</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://scawgrjcjgcmvsimvash.supabase.co">
+<style>
+  html,body{ height:100%; margin:0; }
+  body{ background:#f2ecdf; font-family:'DM Sans',system-ui,sans-serif; -webkit-text-size-adjust:100%; }
+  #root{ min-height:100%; }
+  .xw-boot{ min-height:100%; display:flex; align-items:center; justify-content:center; color:#8a7f6b;
+    font-family:'DM Sans',system-ui,sans-serif; font-size:13px; letter-spacing:.02em; }
+</style>
+</head>
+<body>
+  <div id="root"><div class="xw-boot">Loading the grid…</div></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js" crossorigin></script>
+  <script type="text/babel" data-presets="react" src="crossword-reader.jsx?v=2"></script>
+  <script>
+  /* Crosswords tracker: raw view count (game_plays event=view default) + play (event=play) + live presence
+     (reader_presence -> admin "playing now"). Mirrors the Fog City Frenzy tracker; anon key, no Vercel fns. */
+  (function () {
+    "use strict";
+    try { if (navigator.webdriver) return; } catch (e) {}
+    var ua = (navigator.userAgent || "").toLowerCase();
+    if (/bot|crawl|spider|slurp|headless|phantom|puppeteer|playwright|selenium|scrapy|python|curl|wget|httpclient|java\/|go-http|facebookexternalhit|embedly|preview|node-fetch|undici/.test(ua)) return;
+    var SB = "https://scawgrjcjgcmvsimvash.supabase.co";
+    var KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjYXdncmpjamdjbXZzaW12YXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NzAxMDIsImV4cCI6MjA4ODM0NjEwMn0.lmks8ntJPZ0giQEpuH3tSSBllzmOj20oUrb96kBIdh0";
+    function post(table, row){ try { fetch(SB + "/rest/v1/" + table, { method:"POST", headers:{ "apikey":KEY, "Authorization":"Bearer "+KEY, "Content-Type":"application/json", "Prefer":"return=minimal" }, body:JSON.stringify(row), keepalive:true }).catch(function(){}); } catch(e){} }
+    function sid(){ try { var k="tbi_banner_session_id", v=localStorage.getItem(k); if(!v){ v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("s"+String(Math.random()).slice(2)); localStorage.setItem(k,v); } return v; } catch(e){ return "anon-"+String(Math.random()).slice(2,10); } }
+    var SESSION = sid(), REF = (document.referrer || "").slice(0, 300);
+    post("game_plays", { game: "crosswords", session_id: SESSION, referrer: REF });
+    var t0=Date.now(), MAX=30*60000, last=0, started=false, played=false;
+    function beatNow(){ if(Date.now()-t0>MAX)return; if(document.visibilityState==="hidden")return; if(Date.now()-last<14000)return; last=Date.now(); post("reader_presence", { session_id:SESSION, path:"/crosswords/", title:"Crossword — The Bold Italic", banner_id:null, referrer:REF }); }
+    function loop(){ if(Date.now()-t0>MAX)return; beatNow(); setTimeout(loop, 40000+Math.floor(Math.random()*8000)); }
+    function start(){ if(started)return; started=true; beatNow(); loop(); }
+    function onInteract(){ start(); beatNow(); if(!played){ played=true; post("game_plays", { game:"crosswords", event:"play", session_id:SESSION, referrer:REF }); } }
+    ["pointerdown","touchstart","keydown"].forEach(function(ev){ try{ addEventListener(ev,onInteract,{capture:true,passive:true}); }catch(e){ try{ addEventListener(ev,onInteract,true); }catch(e2){} } });
+    var dwell=0, dv=setInterval(function(){ if(started){ clearInterval(dv); return; } if(document.visibilityState==="visible") dwell+=1000; if(dwell>=8000){ clearInterval(dv); start(); } }, 1000);
+    document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") beatNow(); });
+  })();
+  </script>
+</body>
+</html>

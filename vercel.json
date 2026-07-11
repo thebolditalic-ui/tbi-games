@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/ads.txt",
+      "destination": "https://www.thebolditalic.com/ads.txt",
+      "permanent": true
+    }
+  ]
+}
+
