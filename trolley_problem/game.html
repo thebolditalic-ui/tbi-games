@@ -101,6 +101,7 @@
   .choice:nth-child(3):hover{transform:translateY(-6px) rotate(.6deg)}
   .choice .art{width:100%;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
   .choice .art svg{width:auto;height:auto;max-width:88%;max-height:100%;filter:drop-shadow(0 8px 6px rgba(0,0,0,.14))}
+  .choice[data-id="coit"] .art svg,.choice[data-id="transamerica"] .art svg{max-height:190px}   /* tall towers: shrink so the card button isn't oversized */
   .choice .nm{font-weight:900;font-size:clamp(13px,3.6vw,19px);text-align:center;line-height:1.1}
   .choice .save{background:var(--gold);color:var(--ink);font-weight:900;border-radius:999px;padding:7px 14px;font-size:clamp(11px,3vw,14px);opacity:.4;transition:opacity .12s;letter-spacing:.3px}
   .choice:hover .save{opacity:1}
@@ -228,7 +229,7 @@
     .rescue .fighter svg,.doom .fighter svg{width:70px;height:auto;max-height:70px}
     .track{height:96px}
     .trolley{width:200px}
-    .idle-car{display:none}
+    .idle-car{width:170px;margin:2px auto 0}   /* keep the title-screen cable car visible on short frames */
     .howto{display:none}
   }
 
