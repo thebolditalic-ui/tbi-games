@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Bold Italic &mdash; Games</title>
-<meta name="description" content="Little games about San Francisco, from The Bold Italic.">
+<title>The San Francisco Trolley Problem &mdash; The Bold Italic</title>
+<meta name="description" content="A San Francisco voting game from The Bold Italic. Two beloved city icons, one runaway cable car, and you decide who the city keeps.">
   <link rel="icon" href="https://www.thebolditalic.com/content/images/size/w256h256/2025/04/TBILogo-copy.png" type="image/png">
   <link rel="preconnect" href="https://fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=playfair-display:400,600,700,800&display=swap" rel="stylesheet">
@@ -353,33 +353,16 @@
       .site-header .menu-mobile { display: none; }
     }
 /* ---- games content (site palette, sleeker) ---- */
-.games-main{ max-width:960px; margin:0 auto; padding:26px 20px 100px; position:relative; z-index:1; }
-    .games-hero{ display:block; width:100%; max-width:760px; height:auto; margin:6px auto 34px; border-radius:22px; box-shadow:0 12px 34px rgba(74,50,22,.12), 0 3px 8px rgba(74,50,22,.06); }
-    .games-grid{ display:grid; grid-template-columns:1fr; gap:28px; max-width:760px; margin:0 auto; }
-    @media(min-width:640px){ .games-grid{ grid-template-columns:1fr 1fr; } }
-    .ad-slot{ max-width:760px; margin:38px auto 0; display:flex; align-items:center; justify-content:center; }
-    @media(max-width:639px){ .games-hero{ margin-bottom:16px; } }
-    .game-card{ display:flex; flex-direction:column; text-decoration:none; color:inherit;
-      background:#fffdf9; border-radius:22px; overflow:hidden;
-      box-shadow:0 12px 34px rgba(74,50,22,.12), 0 3px 8px rgba(74,50,22,.06);
-      transition:transform .18s ease, box-shadow .18s ease; }
-    .game-card:hover{ transform:translateY(-6px); box-shadow:0 24px 50px rgba(74,50,22,.18), 0 6px 14px rgba(74,50,22,.09); }
-    .game-card .thumb{ aspect-ratio:16/10; background:radial-gradient(125% 120% at 50% 12%, #ffe9d2 0%, #fbd7bd 52%, #f3c3a2 100%);
-      display:flex; align-items:center; justify-content:center; }
-    .game-card .thumb svg{ width:44%; height:44%; filter:drop-shadow(0 8px 12px rgba(150,70,35,.20)); }
-    .game-card .thumb picture{ display:block; width:100%; height:100%; }
-    .game-card .thumb img{ display:block; width:100%; height:100%; object-fit:cover; }
-    .game-card .cbody{ padding:22px 24px 24px; }
-    .game-card h2{ font-family:'Playfair Display','Times New Roman',serif; font-weight:800; font-size:24px; color:#1E1B1B; margin:0 0 8px; letter-spacing:-.01em; }
-    .game-card p{ font-family:Georgia,'Times New Roman',serif; font-size:15px; color:#6a625a; line-height:1.5; margin:0 0 18px; }
-    .play-btn{ align-self:flex-start; background:#FFD682; color:#1E1B1B; border-radius:100px; padding:10px 26px;
-      font-family:'Playfair Display','Times New Roman',serif; font-weight:700; font-size:15px; letter-spacing:.01em;
-      box-shadow:0 4px 12px rgba(214,150,30,.28); transition:transform .06s ease, box-shadow .16s ease; }
-    .game-card:hover .play-btn{ box-shadow:0 7px 18px rgba(214,150,30,.4); }
-    .game-card.soon{ opacity:.9; }
-    .game-card.soon .thumb{ background:radial-gradient(125% 120% at 50% 12%, #f4efe4 0%, #e7ddcc 100%); }
-    .game-card.soon .thumb svg{ filter:none; }
-    .game-card.soon .play-btn{ background:#e7ddcc; color:#8a8172; box-shadow:none; }
+.game-main{ max-width:600px; margin:0 auto; padding:22px 14px 80px; position:relative; z-index:1; }
+    .game-back{ display:inline-block; margin:2px 4px 18px; font-family:'Playfair Display','Times New Roman',serif; font-weight:600; font-size:15px; color:#1E1B1B; text-decoration:none; opacity:.82; transition:opacity .15s ease; }
+    .game-back:hover{ opacity:1; }
+    .game-frame-wrap{ border-radius:22px; overflow:hidden; background:#EEF2F7; box-shadow:0 16px 44px rgba(74,50,22,.18), 0 4px 12px rgba(74,50,22,.08); }
+    .game-frame{ width:100%; height:840px; border:0; display:block; }
+    .ad-slot{ max-width:760px; margin:6px auto 2px; display:flex; align-items:center; justify-content:center; }
+    /* trim Mediavine's default space above the ad label so it sits closer to the game */
+    .ad-slot .mv-ad-box{ padding-top:10px !important; }
+    .ad-cap{ font-family:'Playfair Display','Times New Roman',serif; font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#b3a488; }
+    @media(max-width:520px){ .game-frame{ height:760px; } }
 </style>
 <!-- Mediavine universal ad script -->
 <script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.mediavine.com/tags/the-bold-italic.js"></script>
@@ -456,58 +439,25 @@
     </div>
   </header>
 
-  <main class="games-main">
-    <picture>
-      <source srcset="assets/games-hero.webp" type="image/webp">
-      <img class="games-hero" src="assets/games-hero.jpg" width="2172" height="724" alt="The Bold Italic — Games. Little games about the city by the bay, made in San Francisco for people who love it.">
-    </picture>
-    <div class="games-grid">
-      <a class="game-card" href="/trolley_problem/" data-game="trolley_problem">
-        <div class="thumb"><picture>
-          <source srcset="assets/trolley-problem-thumb.webp" type="image/webp">
-          <img src="assets/trolley-problem-thumb.jpg" alt="The San Francisco Trolley Problem" loading="lazy">
-        </picture></div>
-        <div class="cbody">
-          <h2>The Trolley Problem</h2>
-          <p>Two beloved slices of San Francisco. One runaway cable car. You pull the lever and decide which one the city keeps.</p>
-          <span class="play-btn">Play &rarr;</span>
-        </div>
-      </a>
-      <a class="game-card" href="/fog_city_frenzy/" data-game="fog_city_frenzy">
-        <div class="thumb"><picture>
-          <source srcset="assets/fog-city-frenzy-thumb.webp" type="image/webp">
-          <img src="assets/fog-city-frenzy-thumb.jpg" alt="Fog City Frenzy" loading="lazy">
-        </picture></div>
-        <div class="cbody">
-          <h2>Fog City Frenzy</h2>
-          <p>Line up the icons of the city by the bay &mdash; cable cars, sourdough, the Golden Gate, and Karl the Fog.</p>
-          <span class="play-btn">Play &rarr;</span>
-        </div>
-      </a>
-      <a class="game-card" href="/crosswords/" data-game="crosswords">
-        <div class="thumb"><picture>
-          <source srcset="assets/crossword-preview.webp" type="image/webp">
-          <img src="assets/crossword-preview.jpg" alt="The Bold Italic Crossword" loading="lazy">
-        </picture></div>
-        <div class="cbody">
-          <h2>Hump Day Crossword</h2>
-          <p>A San Francisco crossword with a fresh angle on the city &mdash; solve the week&rsquo;s puzzle or dig into the archive.</p>
-          <span class="play-btn">Play &rarr;</span>
-        </div>
-      </a>
-      <div class="game-card soon" aria-hidden="true">
-        <div class="thumb"><svg viewBox="0 0 100 100" aria-hidden="true"><g fill="#c9b59a"><circle cx="36" cy="56" r="14"/><circle cx="64" cy="56" r="14"/><circle cx="46" cy="44" r="13"/><circle cx="58" cy="45" r="12"/><rect x="30" y="52" width="40" height="16" rx="8"/></g></svg></div>
-        <div class="cbody">
-          <h2>More soon</h2>
-          <p>New games roll in like the afternoon fog. Check back.</p>
-          <span class="play-btn">Coming up</span>
-        </div>
-      </div>
+  <main class="game-main">
+    <a class="game-back" href="/">&larr; All games</a>
+    <div class="game-frame-wrap" id="play">
+      <iframe class="game-frame" src="game.html?v=20260712a" title="The San Francisco Trolley Problem &mdash; a San Francisco game" loading="lazy" allow="fullscreen"></iframe>
     </div>
     <!-- Mediavine: suppress site-wide units (sticky footer / side rails / leaderboard / interstitial / player); keep in-content. Only ONE settings div per page. -->
-    <div id="mediavine-settings" data-blocklist-leaderboard="1" data-blocklist-top-sidebar="1" data-blocklist-sticky-sidebar="1" data-blocklist-adhesion-mobile="1" data-blocklist-adhesion-tablet="1" data-blocklist-adhesion-desktop="1" data-blocklist-interstitial-mobile="1" data-blocklist-interstitial-desktop="1" data-blocklist-universal-player-desktop="1" data-blocklist-universal-player-mobile="1"></div>
-    <!-- In-page banner: Mediavine in-content placement hint -->
-    <div class="ad-slot"><div class="content_desktop_hint"></div><div class="content_mobile_hint"></div></div>
+    <div id="mediavine-settings"
+         data-blocklist-leaderboard="1"
+         data-blocklist-top-sidebar="1"
+         data-blocklist-sticky-sidebar="1"
+         data-blocklist-adhesion-mobile="1"
+         data-blocklist-adhesion-tablet="1"
+         data-blocklist-adhesion-desktop="1"
+         data-blocklist-interstitial-mobile="1"
+         data-blocklist-interstitial-desktop="1"
+         data-blocklist-universal-player-desktop="1"
+         data-blocklist-universal-player-mobile="1"></div>
+    <!-- In-page banner: Mediavine in-content placement hint (fills once the subdomain is enabled in the Mediavine dashboard) -->
+    <div class="ad-slot" id="ad-slot"><div class="content_desktop_hint"></div><div class="content_mobile_hint"></div></div>
   </main>
 
   </div><!-- end: #wrapper -->
@@ -538,24 +488,46 @@
 })();
 </script>
 <script>
-/* Reflect the admin-set game order/visibility on the hub (falls back to the static layout on any failure) */
 (function(){
-  var A='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjYXdncmpjamdjbXZzaW12YXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NzAxMDIsImV4cCI6MjA4ODM0NjEwMn0.lmks8ntJPZ0giQEpuH3tSSBllzmOj20oUrb96kBIdh0';
-  try{
-    fetch('https://scawgrjcjgcmvsimvash.supabase.co/rest/v1/games?select=key,enabled,sort_order&order=sort_order.asc',{headers:{apikey:A,Authorization:'Bearer '+A}})
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(list){
-        if(!list || !list.length) return;
-        var grid=document.querySelector('.games-grid'); if(!grid) return;
-        var soon=grid.querySelector('.game-card.soon');
-        list.forEach(function(g){
-          var card=grid.querySelector('.game-card[data-game="'+g.key+'"]');
-          if(!card) return;
-          if(g.enabled===false){ card.style.display='none'; }
-          else { card.style.display=''; grid.insertBefore(card, soon || null); }
-        });
-      }).catch(function(){});
-  }catch(e){}
+  var f = document.querySelector('.game-frame'); if(!f) return;
+  window.addEventListener('message', function(e){
+    var d = e.data;
+    if (d && d.type === 'tbi-game-height' && d.height){ f.style.height = d.height + 'px'; }
+  });
+})();
+</script>
+<script>
+(function(){
+  // Mobile: land on the game (skip the tall site header) so the in-page ad sits just below it.
+  if (!window.matchMedia || !window.matchMedia('(max-width: 991px)').matches) return;
+  var target = document.getElementById('play') || document.querySelector('.game-frame-wrap');
+  if (!target) return;
+  if ('scrollRestoration' in history) { try { history.scrollRestoration = 'manual'; } catch(e){} }
+  // don't let the browser pin the old top-of-page content while the header settles
+  try { document.documentElement.style.overflowAnchor = 'none'; } catch(e){}
+
+  // A real user gesture cancels auto-landing so we never fight their scroll.
+  var locked = false;
+  ['touchstart','wheel','keydown','pointerdown'].forEach(function(ev){
+    window.addEventListener(ev, function(){ locked = true; }, { passive: true, once: true });
+  });
+
+  function land(){
+    if (locked) return;
+    var y = target.getBoundingClientRect().top + window.pageYOffset - 6;
+    if (y < 0) y = 0;
+    window.scrollTo(0, y);
+  }
+
+  // Re-apply as the header logo image, web fonts and lazy iframe settle — each of
+  // these changes the header height and would otherwise leave us short (on the "All games" link).
+  land();
+  window.addEventListener('load', land);
+  window.addEventListener('pageshow', land);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(land); }
+  var logo = document.querySelector('.site-header .logo img');
+  if (logo && !logo.complete) { logo.addEventListener('load', land); }
+  [80, 200, 400, 700, 1100].forEach(function(ms){ setTimeout(land, ms); });
 })();
 </script>
 </body>
