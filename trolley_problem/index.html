@@ -353,16 +353,18 @@
       .site-header .menu-mobile { display: none; }
     }
 /* ---- games content (site palette, sleeker) ---- */
-.game-main{ max-width:600px; margin:0 auto; padding:22px 14px 80px; position:relative; z-index:1; }
+.game-main{ max-width:1160px; margin:0 auto; padding:22px 26px 72px; position:relative; z-index:1; }
     .game-back{ display:inline-block; margin:2px 4px 18px; font-family:'Playfair Display','Times New Roman',serif; font-weight:600; font-size:15px; color:#1E1B1B; text-decoration:none; opacity:.82; transition:opacity .15s ease; }
     .game-back:hover{ opacity:1; }
     .game-frame-wrap{ border-radius:22px; overflow:hidden; background:#EEF2F7; box-shadow:0 16px 44px rgba(74,50,22,.18), 0 4px 12px rgba(74,50,22,.08); }
     .game-frame{ width:100%; height:840px; border:0; display:block; }
-    .ad-slot{ max-width:760px; margin:6px auto 2px; display:flex; align-items:center; justify-content:center; }
+    .ad-slot{ max-width:970px; margin:6px auto 2px; display:flex; align-items:center; justify-content:center; }
     /* trim Mediavine's default space above the ad label so it sits closer to the game */
     .ad-slot .mv-ad-box{ padding-top:10px !important; }
     .ad-cap{ font-family:'Playfair Display','Times New Roman',serif; font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#b3a488; }
     @media(max-width:520px){ .game-frame{ height:760px; } }
+    /* Desktop expands across the page with a little side padding; mobile goes full-width. */
+    @media(max-width:991px){ .game-main{ max-width:none; padding-left:10px; padding-right:10px; } }
 </style>
 <!-- Mediavine universal ad script -->
 <script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.mediavine.com/tags/the-bold-italic.js"></script>
