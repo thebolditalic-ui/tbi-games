@@ -359,11 +359,11 @@
     .game-frame-wrap{ border-radius:22px; overflow:hidden; background:#EEF2F7; box-shadow:0 16px 44px rgba(74,50,22,.18), 0 4px 12px rgba(74,50,22,.08); }
     .game-frame{ width:100%; height:720px; border:0; display:block; }
     .ad-slot{ max-width:970px; min-height:250px; margin:14px auto 2px; display:flex; align-items:center; justify-content:center; }
-    #ad-slot{ display:flex !important; }  /* keep the Mediavine slot reserved (it self-sets display:none when unfilled) */
+    .ad-reserve{ max-width:970px; min-height:250px; margin:16px auto 4px; display:flex; align-items:center; justify-content:center; }  /* reserved blank ad space BELOW the game box; Mediavine fills #ad-slot inside it, space persists when unfilled */
     /* trim Mediavine's default space above the ad label so it sits closer to the game */
     .ad-slot .mv-ad-box{ padding-top:10px !important; }
     .ad-cap{ font-family:'Playfair Display','Times New Roman',serif; font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#b3a488; }
-    @media(max-width:520px){ .ad-slot{ min-height:280px; } }
+    @media(max-width:520px){ .ad-reserve{ min-height:280px; } }
     /* Desktop expands across the page with a little side padding; mobile goes full-width. */
     @media(max-width:991px){ .game-main{ max-width:none; padding-left:10px; padding-right:10px; } }
 </style>
@@ -460,7 +460,7 @@
          data-blocklist-universal-player-desktop="1"
          data-blocklist-universal-player-mobile="1"></div>
     <!-- In-page banner: Mediavine in-content placement hint (fills once the subdomain is enabled in the Mediavine dashboard) -->
-    <div class="ad-slot" id="ad-slot"><div class="content_desktop_hint"></div><div class="content_mobile_hint"></div></div>
+    <div class="ad-reserve"><div class="ad-slot" id="ad-slot"><div class="content_desktop_hint"></div><div class="content_mobile_hint"></div></div></div>
   </main>
 
   </div><!-- end: #wrapper -->
