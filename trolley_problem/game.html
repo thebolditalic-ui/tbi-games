@@ -26,8 +26,8 @@
 
   /* reserved Mediavine ad zone — fits a 300x250 + label on mobile, capped band on desktop */
   /* reserved blank space (lower third) — left empty for Mediavine to auto-fill inline */
-  #ad-zone{flex:0 0 auto;height:clamp(190px,30vh,300px)}
-  @media(min-width:820px){ #ad-zone{height:250px} }
+  #ad-zone{flex:0 0 auto;height:0;display:none}  /* removed: ad lives BELOW the iframe (wrapper #ad-slot), like Fog City */
+  @media(min-width:820px){ #ad-zone{height:0} }
 
   /* rolling fog + hills backdrop (behind the game area) */
   .backdrop{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
