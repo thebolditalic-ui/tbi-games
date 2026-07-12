@@ -1176,5 +1176,64 @@ $("againBtn").addEventListener("click", startGame);
 $("shareBtn").addEventListener("click", copyResults);
 $("soundBtn").addEventListener("click", ()=>{ initAudio(); toggleSound(); });
 </script>
+<script>
+/* Trolley Problem tracker: raw view count (game_plays) + live presence
+   (reader_presence -> dashboard "Reading right now"). Writes straight to
+   Supabase with the PUBLIC anon key; no Vercel functions involved. */
+(function () {
+  'use strict';
+  try { if (navigator.webdriver) return; } catch (e) {}
+  var ua = (navigator.userAgent || '').toLowerCase();
+  if (/bot|crawl|spider|slurp|headless|phantom|puppeteer|playwright|selenium|scrapy|python|curl|wget|httpclient|java\/|go-http|facebookexternalhit|embedly|preview|node-fetch|undici/.test(ua)) return;
+
+  var SB = 'https://scawgrjcjgcmvsimvash.supabase.co';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjYXdncmpjamdjbXZzaW12YXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NzAxMDIsImV4cCI6MjA4ODM0NjEwMn0.lmks8ntJPZ0giQEpuH3tSSBllzmOj20oUrb96kBIdh0';
+  function post(table, row) {
+    try {
+      fetch(SB + '/rest/v1/' + table, {
+        method: 'POST',
+        headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(row), keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  function sid() {
+    try {
+      var k = 'tbi_banner_session_id', v = localStorage.getItem(k);
+      if (!v) { v = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('s' + String(Math.random()).slice(2)); localStorage.setItem(k, v); }
+      return v;
+    } catch (e) { return 'anon-' + String(Math.random()).slice(2, 10); }
+  }
+  var SESSION = sid(), REF = (document.referrer || '').slice(0, 300);
+
+  // Cumulative view (raw): one row per game load.
+  post('game_plays', { game: 'trolley_problem', session_id: SESSION, referrer: REF });
+
+  // Live presence + engagement. ANY real interaction with the game (tap / key) counts as
+  // playing: it logs one "play" per session and drives frequent beats so an active player
+  // stays "live" even when mobile throttles the background timer. Listeners are attached at
+  // the window in CAPTURE phase, so they fire on every interaction no matter how the game
+  // itself handles the event (pointer capture, touch-action, etc.).
+  var t0 = Date.now(), MAX = 30 * 60000, last = 0, started = false, played = false;
+  function beatNow() {
+    if (Date.now() - t0 > MAX) return;
+    if (document.visibilityState === 'hidden') return;
+    if (Date.now() - last < 14000) return;                 // throttle: at most ~1 beat / 14s
+    last = Date.now();
+    post('reader_presence', { session_id: SESSION, path: '/trolley_problem/', title: 'The San Francisco Trolley Problem — A game by The Bold Italic', banner_id: null, referrer: REF });
+  }
+  function loop() { if (Date.now() - t0 > MAX) return; beatNow(); setTimeout(loop, 40000 + Math.floor(Math.random() * 8000)); }
+  function start() { if (started) return; started = true; beatNow(); loop(); }
+  function onInteract() {
+    start(); beatNow();
+    if (!played) { played = true; post('game_plays', { game: 'trolley_problem', event: 'play', session_id: SESSION, referrer: REF }); }
+  }
+  ['pointerdown', 'touchstart', 'keydown'].forEach(function (ev) { try { addEventListener(ev, onInteract, { capture: true, passive: true }); } catch (e) { try { addEventListener(ev, onInteract, true); } catch (e2) {} } });
+  // still count as present (no "play") if they only watch a while without tapping
+  var dwell = 0, dv = setInterval(function () { if (started) { clearInterval(dv); return; } if (document.visibilityState === 'visible') dwell += 1000; if (dwell >= 8000) { clearInterval(dv); start(); } }, 1000);
+  // re-beat the instant the tab is shown again (unlock / return to the tab)
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') beatNow(); });
+})();
+</script>
 </body>
 </html>
