@@ -101,7 +101,7 @@
   .choice:nth-child(3):hover{transform:translateY(-6px) rotate(.6deg)}
   .choice .art{width:100%;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
   .choice .art svg{width:auto;height:auto;max-width:88%;max-height:100%;filter:drop-shadow(0 8px 6px rgba(0,0,0,.14))}
-  .choice[data-id="coit"] .art svg,.choice[data-id="transamerica"] .art svg{max-height:190px}   /* tall towers: shrink so the card button isn't oversized */
+  .choice[data-id="coit"] .art,.choice[data-id="transamerica"] .art{max-height:190px}   /* tall towers: cap the ART CONTAINER (NOT the svg — sizing a viewBox-only svg via max-height collapses it in iOS/Safari) so the button isn't oversized */
   .choice .nm{font-weight:900;font-size:clamp(13px,3.6vw,19px);text-align:center;line-height:1.1}
   .choice .save{background:var(--gold);color:var(--ink);font-weight:900;border-radius:999px;padding:7px 14px;font-size:clamp(11px,3vw,14px);opacity:.4;transition:opacity .12s;letter-spacing:.3px}
   .choice:hover .save{opacity:1}
