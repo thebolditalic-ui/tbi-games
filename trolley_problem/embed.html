@@ -1188,7 +1188,7 @@ try{ startGame(); }catch(e){}   // EMBED: auto-start on the first random matchup
 </script>
 <script>
 /* Trolley EMBED tracker: NO on-load view write (the banner impression already counts the per-session
-   appearance). On the FIRST real interaction only: one game_plays 'play' (merged into trolley_problem)
+   appearance). On the first CHOICE only (a .choice click): one game_plays 'play' (merged into trolley_problem)
    + a reader_presence heartbeat under a DISTINCT path/title so the dashboard shows it as its own
    light-blue "reading now" row. Anon key straight to Supabase; no Vercel fns; music/mp3 never load. */
 (function () {
@@ -1206,7 +1206,10 @@ try{ startGame(); }catch(e){}   // EMBED: auto-start on the first random matchup
   function loop(){ if(Date.now()-t0>MAX) return; beatNow(); setTimeout(loop, 40000+Math.floor(Math.random()*8000)); }
   function start(){ if(started) return; started=true; beatNow(); loop(); }
   function onInteract(){ start(); beatNow(); if(!played){ played=true; post('game_plays',{ game:'trolley_problem', event:'play', session_id:SESSION, referrer:REF }); } }
-  ['pointerdown','touchstart','keydown'].forEach(function(ev){ try{ addEventListener(ev,onInteract,{capture:true,passive:true}); }catch(e){ try{ addEventListener(ev,onInteract,true);}catch(e2){} } });
+  // "Playing" = the user actually MADE A CHOICE (clicked a .choice card), not a hover or a
+  // stray click. Delegated + capture so it survives each round's re-render; a keyboard pick
+  // (Enter/Space on a focused .choice button) also fires 'click', so it counts too.
+  document.addEventListener('click', function(e){ var el=e.target; if(el&&el.closest&&el.closest('.choice')) onInteract(); }, true);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') beatNow(); });
 })();
 </script>
