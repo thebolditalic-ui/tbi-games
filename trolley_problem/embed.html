@@ -750,6 +750,12 @@ function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.fl
 $("idleCar").innerHTML = CABLE_CAR;
 /* single sound button is always visible */
 
+/* ---------- LAZY EXTRA ROUNDS (fetched only when a player taps "Keep going") ---------- */
+var EXTRA_BATCHES=['rounds/batch1.js'], loadedBatches=0;
+function moreAvail(){ return loadedBatches < EXTRA_BATCHES.length; }
+function loadBatch(url){ return new Promise(function(res,rej){ window.__TROLLEY_BATCH=null; var s=document.createElement('script'); s.src=url; s.onload=function(){ var b=window.__TROLLEY_BATCH; window.__TROLLEY_BATCH=null; b?res(b):rej(new Error('empty')); }; s.onerror=function(){ rej(new Error('load')); }; document.head.appendChild(s); }); }
+async function keepGoing(){ var btn=$("nextBtn"); if(btn){ btn.disabled=true; btn.textContent='Loading 10 more\u2026'; } try{ var b=await loadBatch(EXTRA_BATCHES[loadedBatches]); Object.assign(ITEMS,b.items||{}); Object.assign(DEATHS,b.deaths||{}); if(b.profiles) Object.assign(PROFILES,b.profiles); (b.matchups||[]).forEach(function(m){ MATCHUPS.push(m); }); order=order.concat(shuffle(b.matchups||[])); loadedBatches++; var rt=$("roundTot"); if(rt) rt.textContent=order.length; if(btn){ btn.disabled=false; } advance(); }catch(e){ if(btn){ btn.disabled=false; btn.textContent='See My Results \u25b8'; btn.onclick=advance; } } }
+
 function startGame(){
   initAudio(); maybeStartMusic();
   order = shuffle(MATCHUPS).slice(0, Math.min(CONFIG.ROUNDS||9, MATCHUPS.length));
@@ -834,8 +840,9 @@ function choose(savedId, doomedId){
   setTimeout(()=>runTrolley(doomedId), 750);
 
   const nextBtn=$("nextBtn");
-  nextBtn.textContent = (idx>=order.length-1) ? "See My Results ▸" : "Next Round ▸";
-  nextBtn.addEventListener("click", advance);
+  var isLast=(idx>=order.length-1);
+  nextBtn.textContent = isLast ? (moreAvail() ? "Keep going ▸" : "See My Results ▸") : "Next Round ▸";
+  nextBtn.addEventListener("click", (isLast && moreAvail()) ? keepGoing : advance);
 }
 
 function ease(p){ return p<0.5 ? 2*p*p : p; }
