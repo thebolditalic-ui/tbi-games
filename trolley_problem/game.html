@@ -103,8 +103,8 @@
   .choice .art svg{width:auto;height:auto;max-width:88%;max-height:100%;filter:drop-shadow(0 8px 6px rgba(0,0,0,.14))}
   /* Coit + Transamerica have very tall viewBoxes (~1168 tall). Size them by WIDTH (not height): iOS/Safari collapses OR overflows a viewBox-only svg constrained by height, but renders width-constrained ones fine (like every normal item). Small + centered inside the normal-height card so they match every other choice card. */
   .choice[data-id="coit"] .art,.choice[data-id="transamerica"] .art{overflow:hidden}
-  .choice[data-id="coit"] .art svg{max-width:52px}
-  .choice[data-id="transamerica"] .art svg{max-width:80px}
+  .choice[data-id="coit"] .art svg{max-width:73px}
+  .choice[data-id="transamerica"] .art svg{max-width:112px}
   .choice .nm{font-weight:900;font-size:clamp(13px,3.6vw,19px);text-align:center;line-height:1.1}
   .choice .save{background:var(--gold);color:var(--ink);font-weight:900;border-radius:999px;padding:7px 14px;font-size:clamp(11px,3vw,14px);opacity:.4;transition:opacity .12s;letter-spacing:.3px}
   .choice:hover .save{opacity:1}
