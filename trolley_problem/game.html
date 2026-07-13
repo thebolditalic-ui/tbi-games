@@ -745,7 +745,7 @@ $("idleCar").innerHTML = CABLE_CAR;
 /* single sound button is always visible */
 
 /* ---------- EXTRA ROUNDS: loaded when the game starts, then shuffled in with the original 10 so the order is fully random ---------- */
-var EXTRA_BATCHES=['rounds/batch1.js','rounds/batch2.js'], batchesLoaded=false, POOL=[];
+var EXTRA_BATCHES=['rounds/batch1.js','rounds/batch2.js','rounds/batch3.js'], batchesLoaded=false, POOL=[];
 function moreAvail(){ return POOL.length > order.length; }
 function loadBatch(url){ return new Promise(function(res){ window.__TROLLEY_BATCH=null; var s=document.createElement('script'); s.src=url; s.onload=function(){ var b=window.__TROLLEY_BATCH; window.__TROLLEY_BATCH=null; res(b); }; s.onerror=function(){ res(null); }; document.head.appendChild(s); }); }
 async function ensureBatches(timeoutMs){ if(batchesLoaded) return; var all=(async function(){ var out=[]; for(var i=0;i<EXTRA_BATCHES.length;i++){ out.push(await loadBatch(EXTRA_BATCHES[i])); } return out; })(); var timed=new Promise(function(r){ setTimeout(function(){ r('t'); }, timeoutMs||2500); }); var res=await Promise.race([all,timed]); if(res!=='t'){ res.forEach(function(b){ if(!b) return; Object.assign(ITEMS,b.items||{}); Object.assign(DEATHS,b.deaths||{}); if(b.profiles) Object.assign(PROFILES,b.profiles); (b.matchups||[]).forEach(function(m){ var pr=[m[0],m[1]]; if(m[2]!=null) pr.pid=m[2]; MATCHUPS.push(pr); }); }); batchesLoaded=true; } }
@@ -763,7 +763,7 @@ async function fetchDisabled(timeoutMs){
 }
 async function startGame(){
   initAudio(); maybeStartMusic();
-  await ensureBatches(3500);
+  await ensureBatches(4000);
   MATCHUPS.forEach(function(m){ var k=m[0]+"|"+m[1]; if(m.pid==null && ORIG_PIDS[k]!=null) m.pid=ORIG_PIDS[k]; });
   var DIS = await fetchDisabled(1500);
   var pool = MATCHUPS.filter(function(m){ return m.pid==null || !DIS[m.pid]; });
