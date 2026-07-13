@@ -745,13 +745,24 @@ $("idleCar").innerHTML = CABLE_CAR;
 var EXTRA_BATCHES=['rounds/batch1.js'], batchesLoaded=false, POOL=[];
 function moreAvail(){ return POOL.length > order.length; }
 function loadBatch(url){ return new Promise(function(res){ window.__TROLLEY_BATCH=null; var s=document.createElement('script'); s.src=url; s.onload=function(){ var b=window.__TROLLEY_BATCH; window.__TROLLEY_BATCH=null; res(b); }; s.onerror=function(){ res(null); }; document.head.appendChild(s); }); }
-async function ensureBatches(timeoutMs){ if(batchesLoaded) return; var all=Promise.all(EXTRA_BATCHES.map(loadBatch)); var timed=new Promise(function(r){ setTimeout(function(){ r('t'); }, timeoutMs||2500); }); var res=await Promise.race([all,timed]); if(res!=='t'){ res.forEach(function(b){ if(!b) return; Object.assign(ITEMS,b.items||{}); Object.assign(DEATHS,b.deaths||{}); if(b.profiles) Object.assign(PROFILES,b.profiles); (b.matchups||[]).forEach(function(m){ MATCHUPS.push(m); }); }); batchesLoaded=true; } }
+async function ensureBatches(timeoutMs){ if(batchesLoaded) return; var all=Promise.all(EXTRA_BATCHES.map(loadBatch)); var timed=new Promise(function(r){ setTimeout(function(){ r('t'); }, timeoutMs||2500); }); var res=await Promise.race([all,timed]); if(res!=='t'){ res.forEach(function(b){ if(!b) return; Object.assign(ITEMS,b.items||{}); Object.assign(DEATHS,b.deaths||{}); if(b.profiles) Object.assign(PROFILES,b.profiles); (b.matchups||[]).forEach(function(m){ var pr=[m[0],m[1]]; if(m[2]!=null) pr.pid=m[2]; MATCHUPS.push(pr); }); }); batchesLoaded=true; } }
 function keepGoing(){ order=order.concat(POOL.slice(order.length, order.length+(CONFIG.ROUNDS||10))); var rt=$("roundTot"); if(rt) rt.textContent=order.length; advance(); }
 
+async function fetchDisabled(timeoutMs){
+  try{
+    if(!CONFIG.SUPABASE_URL||!CONFIG.SUPABASE_ANON_KEY) return {};
+    var ctrl=new AbortController(); var to=setTimeout(function(){ ctrl.abort(); }, timeoutMs||1500);
+    var r=await fetch(CONFIG.SUPABASE_URL+"/rest/v1/trolley_pool?select=id&enabled=is.false",{headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+CONFIG.SUPABASE_ANON_KEY},signal:ctrl.signal});
+    clearTimeout(to); if(!r.ok) return {};
+    var rows=await r.json(); var d={}; (rows||[]).forEach(function(x){ if(x&&x.id!=null) d[x.id]=1; }); return d;
+  }catch(e){ return {}; }
+}
 async function startGame(){
   initAudio(); maybeStartMusic();
   await ensureBatches(2500);
-  POOL = shuffle(MATCHUPS);
+  var DIS = await fetchDisabled(1500);
+  var pool = MATCHUPS.filter(function(m){ return m.pid==null || !DIS[m.pid]; });
+  POOL = shuffle(pool.length ? pool : MATCHUPS);
   order = POOL.slice(0, Math.min(20, POOL.length));
   idx=0; score=0; saved=[]; lost=[]; agree=0; liveRounds=0;
   $("roundTot").textContent = order.length;
