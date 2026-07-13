@@ -742,10 +742,10 @@ $("idleCar").innerHTML = CABLE_CAR;
 /* single sound button is always visible */
 
 /* ---------- EXTRA ROUNDS: loaded when the game starts, then shuffled in with the original 10 so the order is fully random ---------- */
-var EXTRA_BATCHES=['rounds/batch1.js'], batchesLoaded=false, POOL=[];
+var EXTRA_BATCHES=['rounds/batch1.js','rounds/batch2.js'], batchesLoaded=false, POOL=[];
 function moreAvail(){ return POOL.length > order.length; }
 function loadBatch(url){ return new Promise(function(res){ window.__TROLLEY_BATCH=null; var s=document.createElement('script'); s.src=url; s.onload=function(){ var b=window.__TROLLEY_BATCH; window.__TROLLEY_BATCH=null; res(b); }; s.onerror=function(){ res(null); }; document.head.appendChild(s); }); }
-async function ensureBatches(timeoutMs){ if(batchesLoaded) return; var all=Promise.all(EXTRA_BATCHES.map(loadBatch)); var timed=new Promise(function(r){ setTimeout(function(){ r('t'); }, timeoutMs||2500); }); var res=await Promise.race([all,timed]); if(res!=='t'){ res.forEach(function(b){ if(!b) return; Object.assign(ITEMS,b.items||{}); Object.assign(DEATHS,b.deaths||{}); if(b.profiles) Object.assign(PROFILES,b.profiles); (b.matchups||[]).forEach(function(m){ var pr=[m[0],m[1]]; if(m[2]!=null) pr.pid=m[2]; MATCHUPS.push(pr); }); }); batchesLoaded=true; } }
+async function ensureBatches(timeoutMs){ if(batchesLoaded) return; var all=(async function(){ var out=[]; for(var i=0;i<EXTRA_BATCHES.length;i++){ out.push(await loadBatch(EXTRA_BATCHES[i])); } return out; })(); var timed=new Promise(function(r){ setTimeout(function(){ r('t'); }, timeoutMs||2500); }); var res=await Promise.race([all,timed]); if(res!=='t'){ res.forEach(function(b){ if(!b) return; Object.assign(ITEMS,b.items||{}); Object.assign(DEATHS,b.deaths||{}); if(b.profiles) Object.assign(PROFILES,b.profiles); (b.matchups||[]).forEach(function(m){ var pr=[m[0],m[1]]; if(m[2]!=null) pr.pid=m[2]; MATCHUPS.push(pr); }); }); batchesLoaded=true; } }
 function keepGoing(){ order=order.concat(POOL.slice(order.length, order.length+(CONFIG.ROUNDS||10))); var rt=$("roundTot"); if(rt) rt.textContent=order.length; advance(); }
 
 var ORIG_PIDS={"breadbowl|paintedladies":12,"goldengate|transamerica":13,"karl|sunny":14,"burrito|crab":15,"dolores|oceanbeach":16,"bart|muni":17,"coit|lombard":18,"sealion|giants":19,"baytobreakers|sfpride":20,"fortunecookie|ghirardelli":21};
@@ -760,7 +760,7 @@ async function fetchDisabled(timeoutMs){
 }
 async function startGame(){
   initAudio(); maybeStartMusic();
-  await ensureBatches(2500);
+  await ensureBatches(3500);
   MATCHUPS.forEach(function(m){ var k=m[0]+"|"+m[1]; if(m.pid==null && ORIG_PIDS[k]!=null) m.pid=ORIG_PIDS[k]; });
   var DIS = await fetchDisabled(1500);
   var pool = MATCHUPS.filter(function(m){ return m.pid==null || !DIS[m.pid]; });
