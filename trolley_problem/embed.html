@@ -1015,11 +1015,11 @@ const DEATHS = {
     api.burst({emojis:["🌉"],count:3,spread:120,rise:100});
     setTimeout(()=>api.remains(rubbleSVG,"span down"),380);
   }},
-  transamerica:{ word:"KABOOOM!", color:"#c7cdd6", shake:1, after:"It pancaked floor by floor — a clean implosion.", run(f,d,api){
+  transamerica:{ word:"TIMBERRR!", color:"#d9bf86", shake:1, after:"Tipped clean over, and out slid a mummy who'd been wrapped up in there since 1972.", run(f,d,api){
     api.sfx("rumble"); setTimeout(()=>api.sfx("crash"),90);
-    api.anim(f,[{transform:"scaleY(1)",opacity:1},{transform:"translateY(2px) scaleY(.94)",offset:.2},{transform:"translateY(26px) scaleY(.16) scaleX(1.15)",opacity:1,offset:.8},{transform:"translateY(30px) scaleY(.08) scaleX(1.2)",opacity:0}],{duration:720,fill:"forwards",easing:"cubic-bezier(.6,0,.8,.4)"});
-    setTimeout(()=>api.burst({colors:["#dfe4ea","#c7cdd6","#aeb5bf"],count:22,spread:200,rise:70,size:16}),260);
-    setTimeout(()=>api.burst({emojis:["💨","🧱"],count:8,spread:170,rise:90}),300);
+    f.style.transformOrigin="50% 100%"; api.anim(f,[{transform:"rotate(0deg) scale(1)",opacity:1},{transform:"rotate(-5deg)",offset:.16},{transform:"rotate(34deg) translateY(16px) scale(.62)",opacity:1,offset:.72},{transform:"rotate(50deg) translateY(30px) scale(.22)",opacity:0}],{duration:780,fill:"forwards",easing:"cubic-bezier(.5,0,.85,.4)"});
+    setTimeout(()=>api.burst({colors:["#e8d4a0","#d9bf86","#cbb072"],count:22,spread:200,rise:70,size:16}),260);
+    setTimeout(()=>api.burst({emojis:["🏜️","🐫","🔺"],count:8,spread:170,rise:90}),300);
     setTimeout(()=>api.remains(rubbleSVG),520);
   }},
   karl:{ word:"WHOOSH!", color:"#c9ced8", shake:.15, after:"You can't flatten fog. Karl just… regrouped.", run(f,d,api){
