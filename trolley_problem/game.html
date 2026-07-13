@@ -108,6 +108,9 @@
   .choice .nm{font-weight:900;font-size:clamp(13px,3.6vw,19px);text-align:center;line-height:1.1}
   .choice .save{background:var(--gold);color:var(--ink);font-weight:900;border-radius:999px;padding:7px 14px;font-size:clamp(11px,3vw,14px);opacity:.4;transition:opacity .12s;letter-spacing:.3px}
   .choice:hover .save{opacity:1}
+  .choice-both{display:block;width:100%;margin-top:12px;background:#c1272d;color:#fff;border:4px solid var(--ink);border-radius:14px;padding:11px 14px;font-weight:900;font-size:clamp(13px,3.4vw,17px);cursor:pointer;box-shadow:0 6px 0 rgba(40,36,58,.25);letter-spacing:.3px}
+  .choice-both:hover{transform:translateY(-2px);box-shadow:0 9px 0 rgba(40,36,58,.22)}
+  .both-one{display:flex;flex-direction:column;align-items:center}
   .vs{align-self:center;flex:0 0 auto;font-weight:900;color:#fff;background:var(--ink);border-radius:50%;
     width:clamp(40px,11vw,52px);height:clamp(40px,11vw,52px);display:flex;align-items:center;justify-content:center;font-size:clamp(14px,3.6vw,18px);box-shadow:0 6px 0 rgba(0,0,0,.25);transform:rotate(-6deg)}
 
@@ -775,6 +778,7 @@ async function startGame(){
 function renderRound(){
   busy=false;
   const [a,b] = shuffle(order[idx]);
+  const bothOpt = (a==='techbros'&&b==='republican')||(a==='republican'&&b==='techbros');
   $("roundNo").textContent = idx+1;
   $("scoreNo").textContent = score;
   $("gameBody").innerHTML = `
@@ -793,10 +797,12 @@ function renderRound(){
           <div class="save">💛 SAVE THIS</div>
         </button>
       </div>
+      ${bothOpt ? '<button type="button" class="choice-both" id="bothBtn">OK, run them both over.</button>' : ''}
     </div>`;
   $("gameBody").querySelectorAll(".choice").forEach(btn=>{
     btn.addEventListener("click",()=>choose(btn.dataset.id, btn.dataset.other));
   });
+  if(bothOpt){ var bb=$("bothBtn"); if(bb) bb.addEventListener("click",()=>chooseBoth(a,b)); }
 }
 
 function choose(savedId, doomedId){
@@ -951,6 +957,74 @@ function makeApi(track,fighter,doomEl){
   };
 }
 
+function chooseBoth(a,b){
+  if(busy) return; busy=true;
+  initAudio(); cableCar();
+  const A=ITEMS[a], B=ITEMS[b];
+  lost.push(a); lost.push(b);
+  curSaved=null; curDoom=null; voteP=null;
+  $("gameBody").innerHTML = `
+    <div class="stage" id="stage">
+      <div class="sky"></div>
+      <div class="bar top"></div><div class="bar bottom"></div>
+      <div class="vignette"></div>
+      <div class="flash" id="flash"></div>
+      <div class="starburst" id="starburst"></div>
+      <div class="ann" id="ann"></div>
+      <div class="arena">
+        <div class="halo"></div>
+        <div class="track">
+          <div class="street"></div>
+          <div class="rail"></div>
+          <div class="doom nervous" id="doom" style="display:flex;gap:30px;align-items:flex-end;justify-content:center">
+            <div class="both-one"><div class="xeyes">&#10006;&nbsp;&#10006;</div><div class="fighter">${A.svg}</div><div class="fname">${A.name}</div></div>
+            <div class="both-one"><div class="xeyes">&#10006;&nbsp;&#10006;</div><div class="fighter">${B.svg}</div><div class="fname">${B.name}</div></div>
+          </div>
+          <div class="trolley" id="trolley">
+            <div class="speed"><i></i><i></i><i></i></div>
+            ${CABLE_CAR}
+          </div>
+        </div>
+      </div>
+      <div class="stage-actions" id="stageActions">
+        <div class="vote" id="voteBar" style="display:none"></div>
+        <button class="btn" id="nextBtn"></button>
+      </div>
+    </div>`;
+  setTimeout(()=>runTrolleyLine(a,b), 500);
+  const nextBtn=$("nextBtn");
+  var isLast=(idx>=order.length-1);
+  nextBtn.textContent = isLast ? (moreAvail() ? "Keep going ▸" : "See My Results ▸") : "Next Round ▸";
+  nextBtn.addEventListener("click", (isLast && moreAvail()) ? keepGoing : advance);
+}
+function runTrolleyLine(a,b){
+  const stage=$("stage"); if(!stage) return;
+  const track=stage.querySelector(".track"), trolley=$("trolley"), doomEl=$("doom");
+  const cells=doomEl.querySelectorAll(".both-one"), fighters=doomEl.querySelectorAll(".fighter");
+  const W=track.clientWidth||360, carW=trolley.clientWidth||260, startX=-carW-60;
+  trolley.classList.add("roll"); stage.classList.add("cinema"); doomEl.classList.remove("nervous");
+  trolley.style.transform="translateX("+startX+"px)";
+  trolley.animate([
+    {transform:"translateX("+startX+"px)",offset:0},
+    {transform:"translateX("+Math.round(W*0.36)+"px)",offset:.30},
+    {transform:"translateX("+Math.round(W*0.64)+"px)",offset:.72},
+    {transform:"translateX("+(W+carW+80)+"px)",offset:1}
+  ],{duration:2200,easing:"linear",fill:"forwards"});
+  function smack(i,word){
+    const f=fighters[i]; if(!f) return; const cell=cells[i];
+    const xe=cell&&cell.querySelector(".xeyes"); if(xe) xe.remove();
+    const fn=cell&&cell.querySelector(".fname"); if(fn) fn.animate([{opacity:1},{opacity:0}],{duration:250,fill:"forwards"});
+    const api=makeApi(track,f,doomEl);
+    flashGo(); shakeStage(.85); starWord(word,"#c1272d"); api.sfx("crash");
+    f.animate([{transform:"scale(1)",opacity:1},{transform:"translateY(6px) scale(1.1) rotate(-8deg)",offset:.2},{transform:"translateY(30px) scale(.18) rotate(-26deg)",opacity:0}],{duration:440,fill:"forwards",easing:"ease-in"});
+    api.burst({emojis:(i?["🐘","🗳️"]:["💻","🛴"]),count:7,spread:150,rise:95,size:22});
+    api.burst({colors:(i?["#c1272d","#f4f1ea"]:["#5b7bd5","#dfe6ec"]),count:9,spread:140,rise:80,size:12});
+  }
+  setTimeout(()=>smack(0,"BAM!"), 660);
+  setTimeout(()=>smack(1,"AND AGAIN!"), 1590);
+  setTimeout(function(){ trolley.classList.remove("roll"); stage.classList.remove("cinema"); try{ makeApi(track,fighters[0],doomEl).remains(signSVG("NO SURVIVORS","#dfe6ec")); }catch(e){} }, 1980);
+  setTimeout(function(){ concludeRound("One, then the other. The tech bros and the Republican, flattened in a tidy little line. A rare San Francisco consensus."); }, 2150);
+}
 function destroy(doomedId){
   const doomEl=$("doom"); if(!doomEl) return;
   const fighter=doomEl.querySelector(".fighter");
@@ -975,6 +1049,7 @@ function concludeRound(text){
 
 function renderVote(){
   const el=$("voteBar"); if(!el) return;
+  if(!curSaved){ el.style.display="none"; return; }
   el.style.display="block";
   el.innerHTML=`<div class="vote-msg">Tallying the city's votes…</div>`;
   const sName=ITEMS[curSaved].name, oName=ITEMS[curDoom].name;
