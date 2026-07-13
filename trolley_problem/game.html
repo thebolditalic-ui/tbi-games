@@ -752,7 +752,7 @@ async function startGame(){
   initAudio(); maybeStartMusic();
   await ensureBatches(2500);
   POOL = shuffle(MATCHUPS);
-  order = POOL.slice(0, Math.min(CONFIG.ROUNDS||10, POOL.length));
+  order = POOL.slice(0, Math.min(20, POOL.length));
   idx=0; score=0; saved=[]; lost=[]; agree=0; liveRounds=0;
   $("roundTot").textContent = order.length;
   show("game");
