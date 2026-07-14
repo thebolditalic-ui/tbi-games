@@ -15,3 +15,6 @@ Deployed to Vercel (project `tbi-games`). No build step; files are served as-is 
 Add a folder with its own `index.html`, drop a card/link into `index.html`, commit. Vercel auto-deploys on push to `main`.
 
 <!-- git-backed 2026-07-11T23:18:23Z -->
+
+## The Trolley Problem
+Full systems + build doc (architecture, cadence, pipeline, image sizing, Supabase, banner iframe): [`trolley_problem/TROLLEY-BUILD.md`](trolley_problem/TROLLEY-BUILD.md). Any Claude working on this game should read it first.
