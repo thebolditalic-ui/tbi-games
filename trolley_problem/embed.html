@@ -973,6 +973,7 @@ function chooseBoth(a,b){
   const A=ITEMS[a], B=ITEMS[b];
   lost.push(a); lost.push(b);
   curSaved=null; curDoom=null; voteP=null;
+  try{ castVote("bothover", a, b); }catch(e){}
   $("gameBody").innerHTML = `
     <div class="stage" id="stage">
       <div class="sky"></div>
