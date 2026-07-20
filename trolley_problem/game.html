@@ -958,13 +958,14 @@ function makeApi(track,fighter,doomEl){
   };
 }
 
+function voteBoth(){ try{ if(!LIVE) return; fetch(CONFIG.SUPABASE_URL+"/rest/v1/rpc/vote_both",{method:"POST",headers:{"Content-Type":"application/json",apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+CONFIG.SUPABASE_ANON_KEY},body:"{}"}).catch(function(){}); }catch(e){} }
 function chooseBoth(a,b){
   if(busy) return; busy=true; CUR_ROAD="";
   initAudio(); cableCar();
   const A=ITEMS[a], B=ITEMS[b];
   lost.push(a); lost.push(b);
   curSaved=null; curDoom=null; voteP=null;
-  try{ castVote("bothover", a, b); }catch(e){}
+  voteBoth();
   $("gameBody").innerHTML = `
     <div class="stage" id="stage">
       <div class="sky"></div>
