@@ -752,13 +752,14 @@ async function ensureBatches(timeoutMs){ if(batchesLoaded) return; var all=(asyn
 function keepGoing(){ order=order.concat(POOL.slice(order.length, order.length+(CONFIG.ROUNDS||10))); var rt=$("roundTot"); if(rt) rt.textContent=order.length; advance(); }
 
 var ORIG_PIDS={"breadbowl|paintedladies":12,"goldengate|transamerica":13,"karl|sunny":14,"burrito|crab":15,"dolores|oceanbeach":16,"bart|muni":17,"coit|lombard":18,"sealion|giants":19,"baytobreakers|sfpride":20,"fortunecookie|ghirardelli":21};
+var OUTCOMES={}, CUR_ROAD="";
 async function fetchDisabled(timeoutMs){
   try{
     if(!CONFIG.SUPABASE_URL||!CONFIG.SUPABASE_ANON_KEY) return {};
     var ctrl=new AbortController(); var to=setTimeout(function(){ ctrl.abort(); }, timeoutMs||1500);
-    var r=await fetch(CONFIG.SUPABASE_URL+"/rest/v1/trolley_pool?select=id&enabled=is.false",{headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+CONFIG.SUPABASE_ANON_KEY},signal:ctrl.signal});
+    var r=await fetch(CONFIG.SUPABASE_URL+"/rest/v1/trolley_pool?select=id,enabled,a_slug,b_slug,a_word,a_road,a_death,b_word,b_road,b_death",{headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+CONFIG.SUPABASE_ANON_KEY},signal:ctrl.signal});
     clearTimeout(to); if(!r.ok) return {};
-    var rows=await r.json(); var d={}; (rows||[]).forEach(function(x){ if(x&&x.id!=null) d[x.id]=1; }); return d;
+    var rows=await r.json(); var d={}; (rows||[]).forEach(function(x){ if(!x) return; if(x.enabled===false && x.id!=null) d[x.id]=1; if(x.a_slug) OUTCOMES[x.a_slug]={word:x.a_word||"",road:x.a_road||"",after:x.a_death||""}; if(x.b_slug) OUTCOMES[x.b_slug]={word:x.b_word||"",road:x.b_road||"",after:x.b_death||""}; }); return d;
   }catch(e){ return {}; }
 }
 async function startGame(){
@@ -951,14 +952,14 @@ function makeApi(track,fighter,doomEl){
     sfx(name){ (SFX[name]||crash)(); },
     anim(el,frames,opts){ return el.animate(frames,opts); },
     burst(o){ burstParticles(track,o); },
-    remains(html,label){ const r=document.createElement("div"); r.className="remains"; r.innerHTML=html+(label?`<div class="rlabel">${label}</div>`:""); track.appendChild(r); requestAnimationFrame(()=>r.classList.add("show")); return r; },
+    remains(html,label){ if(CUR_ROAD){ if(/<text/i.test(html)){ var __cm=html.match(/fill="([^"]*)"/); html=signSVG(CUR_ROAD, __cm?__cm[1]:"#ffcf33"); label=undefined; } else { label=CUR_ROAD; } } const r=document.createElement("div"); r.className="remains"; r.innerHTML=html+(label?`<div class="rlabel">${label}</div>`:""); track.appendChild(r); requestAnimationFrame(()=>r.classList.add("show")); return r; },
     hide(){ doomEl.classList.add("gone"); },
     overlay(css,frames,opts){ const o=document.createElement("div"); o.style.cssText="position:absolute;pointer-events:none;z-index:5;"+css; $("stage").appendChild(o); if(frames) o.animate(frames,opts); return o; }
   };
 }
 
 function chooseBoth(a,b){
-  if(busy) return; busy=true;
+  if(busy) return; busy=true; CUR_ROAD="";
   initAudio(); cableCar();
   const A=ITEMS[a], B=ITEMS[b];
   lost.push(a); lost.push(b);
@@ -1033,12 +1034,13 @@ function destroy(doomedId){
   const xe=doomEl.querySelector(".xeyes"); if(xe) xe.remove();
   const fn=doomEl.querySelector(".fname"); if(fn) fn.animate([{opacity:1},{opacity:0}],{duration:300,fill:"forwards"});
   const cfg=DEATHS[doomedId]||DEATHS._default;
+  const ov=OUTCOMES[doomedId]||{}; CUR_ROAD=(ov.road!=null?ov.road:"");
   flashGo();
   shakeStage(cfg.shake!=null?cfg.shake:0.7);
-  starWord(cfg.word||"SPLAT!", cfg.color||"#ffb703");
+  starWord((ov.word||cfg.word||"SPLAT!"), cfg.color||"#ffb703");
   const api=makeApi(track,fighter,doomEl);
   try{ cfg.run(fighter,doomEl,api); }catch(e){ try{ DEATHS._default.run(fighter,doomEl,api); }catch(_){} }
-  setTimeout(()=>concludeRound(cfg.after||"One saved. One sent to the trolley."), cfg.dur||1250);
+  setTimeout(()=>concludeRound((ov.after||cfg.after||"One saved. One sent to the trolley.")), cfg.dur||1250);
 }
 
 function concludeRound(text){
